@@ -550,13 +550,17 @@ function! s:add_bulleted_link(lines, abs_filepath)
 endfunction
 
   
-
 " insert list of links to the current page
 function! s:insert_link_array(title, lines)
   let links_rx = '\m^\s*'.vimwiki#u#escape(vimwiki#lst#default_symbol()).' '
-  call zettel#vimwiki#update_listing(a:lines, a:title, links_rx)
-endfunction
+  let gen = { 'lines': a:lines }
 
+  function! gen.f() abort
+      return self.lines
+  endfunction
+
+  call vimwiki#base#update_listing_in_buffer(gen, a:title, links_rx, line('$')+1, 1, 1)
+endfunction
 
 " based on vimwikis "generate links", adding the %title to the link
 function! zettel#vimwiki#generate_links()
@@ -736,9 +740,14 @@ function! zettel#vimwiki#generate_tags(...) abort
     endif
   endfor
 
-  let links_rx = '\m\%(^\s*$\)\|\%('.vimwiki#vars#get_syntaxlocal('rxH2').'\)\|\%(^\s*'
+	  let links_rx = '\m\%(^\s*$\)\|\%('.vimwiki#vars#get_syntaxlocal('rxH2').'\)\|\%(^\s*'
         \ .vimwiki#u#escape(vimwiki#lst#default_symbol()).' '
         \ .vimwiki#vars#get_syntaxlocal('rxWikiLink').'$\)'
+  let gen = { 'lines': lines }
 
-  call zettel#vimwiki#update_listing(lines, 'Generated Tags', links_rx)
+  function! gen.f() abort
+      return self.lines
+  endfunction
+
+  call vimwiki#base#update_listing_in_buffer(gen, 'Generated Tags', links_rx, line('$')+1, 1, 1)
 endfunction

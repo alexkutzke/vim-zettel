@@ -3,6 +3,7 @@ if exists("g:loaded_zettel") || &cp
 endif
 
 let g:loaded_zettel = 1
+let g:loaded_zettel_wiki_nr = 0
 
 
 " gloabal commands
@@ -15,5 +16,5 @@ command! -bang -nargs=* ZettelInsertNote call zettel#fzf#execute_fzf(<q-args>,
       \'--skip-vcs-ignores', fzf#vim#with_preview({
       \'down': '~40%',
       \'sink*':function('zettel#fzf#insert_note'),
-      \'dir': vimwiki#vars#get_wikilocal('path',0),
+      \'dir': vimwiki#vars#get_wikilocal('path',g:zettel_wiki_nr),
       \'options':['--exact']}))
